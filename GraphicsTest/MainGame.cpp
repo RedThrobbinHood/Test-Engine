@@ -6,12 +6,9 @@
 #include <string>
 
 
-MainGame::MainGame()
+MainGame::MainGame() : _screenWidth(1024), _screenHeight(768) , _time(0.0f), _window(nullptr), _gameState(GameState::PLAY)
 {
-	_window = nullptr;
-	_screenWidth = 1024;
-	_screenHeight = 768;
-	_gameState = GameState::PLAY;
+
 }
 
 
@@ -72,6 +69,7 @@ void MainGame::initShaders()
 {
 	// Compile shader files
 	_colorProgram.compileShaders("Shaders/colorShading.vert", "Shaders/colorShading.frag");
+
 	// Add the attributes declared in the shader
 	_colorProgram.addAttribute("vertexPosition");
 	_colorProgram.addAttribute("vertexColor");
@@ -84,6 +82,7 @@ void MainGame::gameLoop()
 	while (_gameState != GameState::EXIT)
 	{
 		processInput();
+		_time += 0.01f;
 		drawGame();
 	}
 }
@@ -109,6 +108,7 @@ void MainGame::processInput()
 
 void MainGame::drawGame()
 {
+
 	// Tells OpenGL what depth to clear to
 	glClearDepth(1.0f);
 	// Clears screen (buffer)
@@ -116,6 +116,11 @@ void MainGame::drawGame()
 
 	_colorProgram.Use();
 
+	// Gets the time location
+	GLuint timeLocation = _colorProgram.getUniformLocation("time");
+	glUniform1f(timeLocation, _time);
+
+	// Draw sprite
 	_sprite.draw();
 
 	_colorProgram.unUse();
